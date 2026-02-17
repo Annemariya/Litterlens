@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Waste Detection History</title>
+    <link rel="icon" type="image/png" href="/static/icons8.png">
+    <style>
+        /* Dark Theme Styling */
+        body { 
+            font-family: sans-serif; 
+            background-color: #0f0f0f; 
+            color: white; 
+            margin: 0; 
+            padding: 20px; 
+        }
+
+        /* Header */
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px; 
+            border-bottom: 1px solid #333; 
+            padding-bottom: 15px; 
+        }
+        .header h1 { margin: 0; font-size: 24px; color: #fff; }
+        
+        /* Back Button */
+        .back-btn { 
+            background: #222; 
+            color: #00d26a; 
+            text-decoration: none; 
+            padding: 8px 15px; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            border: 1px solid #333;
+        }
+        .back-btn:hover { background: #333; }
+
+        /* Grid Layout for Images */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* Individual Card Styling */
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .card:hover { 
+            transform: translateY(-5px); 
+            border-color: #00d26a; 
+        }
+        
+        .card img { 
+            width: 100%; 
+            height: 200px; 
+            object-fit: cover; 
+            border-bottom: 1px solid #333;
+        }
+        
+        .info { padding: 15px; }
+        .info h3 { margin: 0; font-size: 16px; color: #fff; }
+        .info p { margin: 5px 0; font-size: 13px; color: #aaa; }
+        
+        /* Waste Tag Styling */
+        .tag { 
+            display: inline-block; 
+            background: #2b1d1d; 
+            color: #ff4d4d; 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            font-size: 12px; 
+            margin-top: 5px;
+            border: 1px solid #501b1b;
+        }
+        .tag.clean {
+             background: #1b2b1d; 
+             color: #4dff88;
+             border: 1px solid #1b5025;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>📸 Detection History</h1>
+        <a href="/" class="back-btn">← Back to Live View</a>
+    </div>
+
+    <div id="loading" style="color: #666;">Loading snapshots...</div>
+    
+    <div class="gallery" id="gallery-container">
+        </div>
+
+    <script>
+        // Fetch data from our Python API
+        fetch('/api/history')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('gallery-container');
+                const loading = document.getElementById('loading');
+                
+                loading.style.display = 'none'; // Hide loading text
+
+                if (data.length === 0) {
+                    container.innerHTML = '<p style="color: #aaa;">No snapshots found yet. Wait for the scheduled time.</p>';
+                    return;
+                }
+
+                data.forEach(item => {
+                    // Determine if we should show red (waste) or green (clean)
+                    const isWaste = item.waste_detected.toLowerCase() !== "no waste detected";
+                    const tagClass = isWaste ? "tag" : "tag clean";
+
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <a href="${item.image_url}" target="_blank">
+                            <img src="${item.image_url}" alt="Snapshot">
+                        </a>
+                        <div class="info">
+                            <h3>Camera ${item.cam_id}</h3>
+                            <p>📅 ${item.timestamp}</p>
+                            <div class="${tagClass}">Found: ${item.waste_detected}</div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('loading').innerText = "Error loading data.";
+            });
+    </script>
+
+</body>
+</html>

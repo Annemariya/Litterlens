@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="/static/icons8.png">
+<title>Login - LitterLens</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+
+/* Background Image */
+body{
+    background-image: url('/static/litter.png'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Dark overlay */
+ .overlay{
+    position:absolute;
+    inset:0;
+    background: rgba(0,0,0,0.35); 
+    backdrop-filter: blur(8px);   
+}
+
+
+/* Glass Card */
+.glass{
+    backdrop-filter: blur(14px);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+}
+
+</style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center">
+
+<!-- Overlay -->
+<div class="overlay absolute inset-0"></div>
+
+<!-- Glass Login Card -->
+<div class="glass relative z-10 shadow-2xl rounded-2xl p-10 w-full max-w-md text-white">
+
+<h2 class="text-3xl font-bold text-center mb-8">Staff Login</h2>
+
+<form action="/login" method="post">
+
+<label class="block mb-2 font-medium">Employee ID</label>
+<input 
+type="text"
+name="employee_id"
+placeholder="Enter Employee ID"
+class="w-full mb-4 p-3 rounded-lg bg-white/10 border border-white/20 
+text-white placeholder-white/80 
+focus:outline-none focus:ring-2 focus:ring-green-400"
+required
+>
+
+<label class="block mb-2 font-medium">Zone</label>
+<select 
+name="zone_check"
+class="w-full mb-4 p-3 rounded-lg bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-green-400"
+required>
+<option value="" class="text-black">Select your Zone</option>
+<option value="1" class="text-black">Zone 1</option>
+<option value="2" class="text-black">Zone 2</option>
+<option value="3" class="text-black">Zone 3</option>
+<option value="admin" class="text-black">Headquarters (Admin)</option>
+</select>
+
+<label class="block mb-2 font-medium text-white/90">Password</label>
+
+<input 
+type="password"
+name="password"
+placeholder="Enter password"
+class="w-full mb-6 p-3 rounded-lg 
+bg-white/15 border border-white/25
+text-white placeholder-white/80
+focus:outline-none focus:ring-2 focus:ring-green-400"
+required
+>
+
+
+<button 
+class="w-full bg-green-500 hover:bg-green-600 transition duration-300 py-3 rounded-lg font-semibold text-lg shadow-lg" type="submit">
+Login
+</button>
+
+<p class="text-sm text-center mt-6">
+Don't have an account?
+<a href="\register" class="text-green-300 font-semibold hover:underline">
+Register
+</a>
+</p>
+
+</form>
+</div>
+
+</body>
+</html>

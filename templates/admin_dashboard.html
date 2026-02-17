@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ location_name }} Dashboard</title>
+    <style>
+        body { background: #111; color: white; margin: 0; font-family: sans-serif; }
+        
+        /* 2x2 Grid Layout (Exactly 4 cameras) */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 Columns */
+            grid-template-rows: 50vh 50vh;  /* 2 Rows, each half screen height */
+            height: 100vh;
+        }
+
+        .camera-card {
+            position: relative;
+            border: 4px solid grey; /* Default border */
+            overflow: hidden;
+        }
+
+        .camera-card img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* The Risk Badge */
+        .risk-badge {
+            position: absolute;
+            top: 10px; right: 10px;
+            padding: 5px 10px;
+            background: rgba(0,0,0,0.8);
+            font-weight: bold;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grid">
+        {% for cam in cameras %}
+        <div class="camera-card" id="card-{{ cam.id }}">
+            <div class="risk-badge" id="badge-{{ cam.id }}">Analyzing...</div>
+            
+            <img src="/video_feed/{{ cam.id }}">
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // Update Risk Status every 2 seconds
+        function updateRiskLevels() {
+            // Get all camera IDs from the page
+            const cards = document.querySelectorAll('.camera-card');
+            
+            cards.forEach(card => {
+                const camId = card.id.replace('card-', '');
+                
+                fetch(`/api/risk_status/${camId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        // 1. Change Border Color
+                        card.style.borderColor = data.color;
+                        
+                        // 2. Update Badge Text
+                        const badge = document.getElementById(`badge-${camId}`);
+                        badge.innerText = `${data.status} (${data.count} items)`;
+                        badge.style.color = data.color;
+                    });
+            });
+        }
+
+        setInterval(updateRiskLevels, 2000); // Run every 2 seconds
+    </script>
+</body>
+</html>

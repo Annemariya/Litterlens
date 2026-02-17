@@ -1,0 +1,20 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+
+# IDE Settings
+.vscode/
+
+# Database (Local SQLite if any)
+*.db
+test_db.db
+
+# Sensitive Info
+.env
+#AI models
+best.pt

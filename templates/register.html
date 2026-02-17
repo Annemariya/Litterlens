@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Registration - LitterLens</title>
+<link rel="icon" type="image/png" href="/static/icons8.png">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+.hero-bg {
+    background-image: url('/static/litter.png');
+    background-size: cover;
+    background-position: center;
+}
+</style>
+</head>
+
+<body class="text-white">
+
+<section class="hero-bg min-h-screen relative flex items-center justify-center">
+
+    <!-- Dark overlay -->
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+
+    <!-- FIELDS DIRECTLY ON BACKGROUND -->
+    <form action="/register" method="post" class="relative w-full max-w-4xl px-10 grid grid-cols-1 md:grid-cols-2 gap-6 z-10">
+
+        <h2 class="col-span-2 text-3xl font-semibold text-center mb-4">Staff Registration</h2>
+
+        <div>
+            <label class="block mb-1">Full Name</label>
+            <input type="text" name="full_name" class="w-full bg-white/20 border border-white/40 text-white p-3 rounded focus:outline-none" placeholder="Enter full name" required>
+        </div>
+
+        <div>
+            <label class="block mb-1">Age</label>
+            <input type="number" name="age" class="w-full bg-white/20 border border-white/40 text-white p-3 rounded focus:outline-none" placeholder="Age" min="18" required>
+        </div>
+
+        <div>
+            <label class="block mb-1">Sex</label>
+            <select name="sex" class="w-full bg-white/20 border border-white/40 text-white p-3 rounded focus:outline-none" required>
+                <option value="" disabled selected class="text-gray-700">Select sex</option>
+                <option value="Male" class="text-black">Male</option>
+                <option value="Female" class="text-black">Female</option>
+                <option value="Other" class="text-black">Other</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block mb-1">Phone Number</label>
+            <input type="tel" name="phone_number" class="w-full bg-white/20 border border-white/40 text-white p-3 rounded focus:outline-none" placeholder="10 digit phone no." required>
+        </div>
+
+        <div>
+            <label class="block mb-1">Email (Optional)</label>
+            <input type="email" name="email" class="w-full bg-white/20 border border-white/40 text-white p-3 rounded focus:outline-none" placeholder="Enter email">
+        </div>
+
+        <div>
+            <label class="block mb-1">Employee ID</label>
+            <input type="text" name="employee_id" class="w-full bg-white/20 border border-white/40 text-white p-3 rounded focus:outline-none" placeholder="EMP123" required>
+        </div>
+
+        <div>
+            <label class="block mb-1">Job Role</label>
+            <select name="job_role" class="w-full bg-white/20 border border-white/40 text-white p-3 rounded focus:outline-none" required>
+                <option value="" disabled selected class="text-gray-700">Select role</option>
+                <option value="Field Worker" class="text-black">Field Worker</option>
+                <option value="Supervisor" class="text-black">Supervisor</option>
+                <option value="Driver" class="text-black">Driver</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block mb-1">Zone</label>
+            <select name="zone" class="w-full bg-white/20 border border-white/40 text-white p-3 rounded focus:outline-none" required>
+                <option value="" disabled selected class="text-gray-700">Select Zone</option>
+                <option value="1" class="text-black">Zone 1</option>
+                <option value="2" class="text-black">Zone 2</option>
+                <option value="3" class="text-black">Zone 3</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block mb-1">Password</label>
+            <input type="password" name="password" class="w-full bg-white/20 border border-white/40 text-white p-3 rounded focus:outline-none" placeholder="Create password" required>
+        </div>
+
+        <div>
+            <label class="block mb-1">Confirm Password</label>
+            <input type="password" name="confirm_password" class="w-full bg-white/20 border border-white/40 text-white p-3 rounded focus:outline-none" placeholder="Re-enter password" required>
+        </div>
+
+        <button type="submit" class="col-span-2 mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg text-lg font-bold shadow-lg">
+            Register
+        </button>
+
+        <p class="col-span-2 text-center text-white mt-2">
+            Already have an account? <a href="/login" class="text-blue-300 font-medium">Login</a>
+        </p>
+
+    </form>
+</section>
+
+</body>
+</html>
+

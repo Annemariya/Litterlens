@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LitterLens</title>
+    <link rel="icon" type="image/png" href="/static/icons8.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+         
+        .hero-bg {
+            background-image: url('/static/litter.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+
+        }
+    </style>
+</head>
+
+ <body class="text-white">
+
+    <!-- NAVBAR (outside hero) -->
+    <nav class="absolute top-0 w-full flex justify-end p-6 space-x-4 z-50">
+        <a href="\register" class="px-4 py-2 rounded-lg border border-white/40 cursor-pointer">Register</a>
+        <a href="\login" class="px-4 py-2 rounded-lg border border-white/40 cursor-pointer">Login</a>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero-bg min-h-screen relative">
+
+        <!-- Dark overlay -->
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+
+        <!-- CENTERED CONTENT -->
+        <div class="relative flex flex-col justify-center items-center text-center min-h-screen z-10">
+            <h1 class="text-5xl md:text-6xl font-bold tracking-tight">LitterLens</h1>
+            <p class="text-xl md:text-2xl mt-4 text-gray-200">AI-powered Urban Waste Detection & Mapping</p>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 w-full text-center z-10">
+            <span class="animate-bounce text-gray-300 text-2xl">↓</span>
+        </div>
+
+    </section>
+
+
+    <!-- INTRO SECTION -->
+      <section class="py-24 px-6 bg-gray-100 flex justify-center">
+    
+     <div class="glass-white max-w-4xl text-center p-12"></div>
+         <p class="text-gray-800 text-lg leading-relaxed">
+           LitterLens leverages computer vision, geospatial analytics,
+            and intelligent task automation to enhance urban sanitation.
+            The system detects street waste in real-time, identifies hotspot zones, 
+            and assists municipal teams in optimizing cleaning 
+            operations for smart and sustainable cities.
+        </p>
+    </div>
+
+</section>
+
+
+    <!-- FEATURES SECTION -->
+    <section class="bg-gray-100 text-gray-900 py-20 px-6">
+        <div class="max-w-6xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-10">Key Features</h2>
+            
+            <div class="grid md:grid-cols-3 gap-10">
+                
+                <!-- CARD 1 -->
+                <div class="bg-white rounded-xl p-8 shadow hover:shadow-lg transition">
+                    <div class="text-4xl mb-4">🎯</div>
+                    <h3 class="text-xl font-semibold mb-2">Smart Waste Detection</h3>
+                    <p class="text-gray-600">
+                        Detect plastic, paper, organic & other waste types using AI-powered computer vision.
+                    </p>
+                </div>
+
+                <!-- CARD 2 -->
+                <div class="bg-white rounded-xl p-8 shadow hover:shadow-lg transition">
+                    <div class="text-4xl mb-4">🗺️</div>
+                    <h3 class="text-xl font-semibold mb-2">Geo-Mapping & Hotspots</h3>
+                    <p class="text-gray-600">
+                        Automatically map waste density and visualize hotspots across the city in real-time.
+                    </p>
+                </div>
+
+                <!-- CARD 3 -->
+                <div class="bg-white rounded-xl p-8 shadow hover:shadow-lg transition">
+                    <div class="text-4xl mb-4">⚙️</div>
+                    <h3 class="text-xl font-semibold mb-2">Task Automation</h3>
+                    <p class="text-gray-600">
+                        Automatically assign cleanup tasks to workers based on waste severity & location.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

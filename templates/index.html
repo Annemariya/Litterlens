@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LitterLens CCTV Dashboard</title>
+    <link rel="icon" type="image/png" href="/static/icons8.png">
+    <script>
+        // 1. AUTOMATICALLY SET DATE AND TIME ON LOAD
+        window.onload = function() {
+            const dateInput = document.querySelector('input[type="date"]');
+            const timeInput = document.querySelector('input[type="time"]');
+            
+            const now = new Date();
+            
+            // Sets date to YYYY-MM-DD format
+            const today = now.toISOString().split('T')[0];
+            dateInput.value = today;
+
+            // Sets time to HH:MM format
+            const currentTime = now.toTimeString().split(' ')[0].substring(0, 5);
+            timeInput.value = currentTime;
+        };
+
+        // 2. SEND NEW SNAPSHOT TIME TO BACKEND
+        async function saveSnapshotSettings() {
+            const timeValue = document.querySelector('input[type="time"]').value;
+            
+            try {
+                const response = await fetch('/api/update_snapshot_time', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ time: timeValue })
+                });
+
+                if (response.ok) {
+                    alert('Snapshot time successfully updated to ' + timeValue);
+                } else {
+                    alert('Server error: Failed to update time.');
+                }
+            } catch (error) {
+                console.error("Error updating time:", error);
+                alert('Could not connect to the server.');
+            }
+        }
+        const cameraZones = {
+        "1": [1, 2, 3, 4],
+        "2": [5, 6, 7, 8],
+        "3": [9, 10, 11, 12]
+    };
+
+    function filterCameras() {
+        const selectedZone = document.getElementById('zoneSelect').value;
+        const activeCamIds = cameraZones[selectedZone];
+        const grid = document.getElementById('cameraGrid');
+        
+        // Clear current grid
+        grid.innerHTML = '';
+
+        // Generate HTML for the selected cameras
+        activeCamIds.forEach(id => {
+            const card = document.createElement('div');
+            card.className = 'camera-card';
+            card.innerHTML = `
+                <h3>Camera ${id}</h3>
+                <img src="/video_feed/${id}" onerror="this.src='/static/no_signal.png'">
+                <div class="risk-status" id="badge-${id}">SCANNING...</div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // Run once on load to show Zone 1 by default
+    window.onload = function() {
+        filterCameras();
+        // Your existing date/time auto-update code here...
+    };
+    </script>
+
+    <style>
+        /* Dark Theme */
+        body { 
+            font-family: sans-serif; 
+            background-color: #0f0f0f; 
+            color: white; 
+            margin: 0; 
+            padding: 0; 
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Stop page scrolling */
+        }
+
+        /* Header (Top Bar) */
+        .header { 
+            background: #222; 
+            height: 50px; /* Fixed small height */
+            padding: 0 20px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 1px solid #444;
+        }
+
+        /* Grid Container */
+        .camera-grid {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            height: calc(100vh - 50px);
+            background: #000;
+         }
+
+        .camera-card {
+            width: 50%;   /* 2 columns = 50% each */
+            height: 50%;  /* 2 rows = 50% each */
+            box-sizing: border-box;
+            border: 1px solid #333;
+            position: relative;
+            overflow: hidden;
+        }
+
+/* If you strictly want 4 cameras on one screen, 
+   2x2 is the standard for 1/4th screen size. */
+        
+        .camera-card h3 {
+            position: absolute;
+            top: 5px; left: 5px;
+            background: rgba(0,0,0,0.6);
+            padding: 2px 6px;
+            font-size: 12px;
+            border-radius: 4px;
+            margin: 0;
+            z-index: 10;
+        }
+
+        /* Image Styling */
+        img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; /* Fills the box without distortion */
+        }
+
+        /* Controls */
+        .controls { display: flex; gap: 10px; font-size: 12px; }
+        input, button { padding: 3px 8px; }
+        button { background: #00d26a; border: none; color: white; cursor: pointer; border-radius: 3px; }
+
+        /* Modern Button Styling */
+.view-history-btn {
+    background: #2a2a2a;
+    color: #00d26a !important; /* Forces green color */
+    border: 1px solid #00d26a;
+    padding: 6px 12px;
+    text-decoration: none !important; /* Removes purple underline */
+    border-radius: 4px;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.view-history-btn:hover {
+    background: #00d26a;
+    color: white !important;
+}
+
+/* Fix for the Header Layout */
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+    <h4>LitterLens Command Center</h4>
+    <div class="controls">
+        <span>Zone: 
+            <select id="zoneSelect" onchange="filterCameras()">
+                <option value="1">Zone 1 (Cams 1-4)</option>
+                <option value="2">Zone 2 (Cams 5-8)</option>
+                <option value="3">Zone 3 (Cams 9-12)</option>
+            </select>
+        </span>
+        <span>Date: <input type="date" id="currentDate"></span>
+        <button onclick="saveSnapshotSettings()">Save</button>
+        <a href="/snapshots_page" class="view-history-btn">📸 View History</a>
+    </div>
+</div>
+
+<div class="camera-grid" id="cameraGrid">
+    </div>
+
+</body>
+</html>
