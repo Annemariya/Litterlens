@@ -16,6 +16,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 # --- ADD THIS TO MAIN.PY ---
 from fastapi.staticfiles import StaticFiles  # Ensure this is imported at top
+from dotenv import load_dotenv
 
 # This is the magic line that makes images visible:
 
@@ -28,7 +29,10 @@ app.mount("/detected_snapshots", StaticFiles(directory="detected_snapshots"), na
 # Load your YOLO Model
 model = YOLO("best.pt") # Ensure your best.pt is in the folder
 
-DATABASE_URL = "postgresql+psycopg2://postgres:lladmin@localhost:8000/litterlens_db"
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    DATABASE_URL = "postgresql+psycopg2://postgres:lladmin@localhost:5432/litterlens_db"
 
 # --- DATABASE SETUP ---
 engine = create_engine(DATABASE_URL)
@@ -204,56 +208,27 @@ def calculate_risk_level(waste_count):
 # --- FAKE DATA SEEDING (Run this once to setup X, Y, Z) ---
 # --- REPLACE YOUR OLD seed_data FUNCTION WITH THIS ---
 def seed_data(db: Session):
-    # 1. Create Locations (Zones)
-    locations = [
-        Location(id=1, name="Zone 1"),
-        Location(id=2, name="Zone 2"),
-        Location(id=3, name="Zone 3")
-    ]
+    # Check if the admin user already exists
+    admin_user = db.query(User).filter(User.employee_id == "ADMIN001").first()
     
-    if not db.query(Location).first():
-        db.add_all(locations)
-        db.commit()
-
-    # 2. Create Special Admin
-    admin = db.query(User).filter(User.role == "admin").first()
-    if not admin:
-        special_admin = User(
-            full_name="Super Supervisor",
+    if not admin_user:
+        # Only add if the user is NOT found
+        new_admin = User(
             employee_id="ADMIN001",
             password="admin_secret_pass",
-            role="admin",
-            zone=1,
-            job_role="Supervisor",
+            full_name="Super Supervisor",
             age=35,
             sex="Male",
-            phone_number="0000000000"
+            phone_number="0000000000",
+            job_role="Supervisor",
+            zone=1,
+            role="admin"
         )
-        db.add(special_admin)
+        db.add(new_admin)
         db.commit()
-        print("✅ Special Admin Created: ID='ADMIN001'")
-
-    # 3. Create or Update the Camera Feed (REQUIRED for index.html)
-    # Use the IP displayed in your IP Webcam app
-    PHONE_IP_URL = "http://192.168.1.36:8080/video" 
-
-    camera = db.query(Camera).filter(Camera.id == 1).first()
-    if not camera:
-        new_camera = Camera(
-            id=1, 
-            name="camera1", 
-            url=PHONE_IP_URL, 
-            location_id=1
-        )
-        db.add(new_camera)
-        db.commit()
-        print(f"✅ Camera seeded with URL: {PHONE_IP_URL}")
+        print("✅ Admin user created successfully.")
     else:
-        # Update the URL if your phone's IP changed
-        camera.url = PHONE_IP_URL
-        db.commit()
-        print("✅ Camera URL updated in database.")
-# Now add the lists
+        print("ℹ️ Admin user already exists. Skipping seed.")
 
 
 # --- REPLACE YOUR OLD LOGIN ROUTE WITH THIS ---
@@ -468,13 +443,13 @@ async def get_history():
     return JSONResponse(content=data)
 
 @app.get("/staff_mngmt", response_class=HTMLResponse)
-async def manage_staff(request: Request, db: Session = Depends(get_db)):
-    # Fetch all users who are 'staff' (not admin)
-    staff = db.query(User).filter(User.role == "staff").all()
+def get_staff_management(request: Request, db: Session = Depends(get_db)):
+    # This fetches all users from the 'users' table in Supabase
+    staff_list = db.query(User).all() 
     
     return templates.TemplateResponse("staff_mngmt.html", {
-        "request": request,
-        "staff_list": staff
+        "request": request, 
+        "staff_list": staff_list
     })
 
 # --- ADD THIS AT THE VERY END OF main.py ---

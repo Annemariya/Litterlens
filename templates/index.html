@@ -164,6 +164,15 @@
     color: white !important;
 }
 
+.back-btn { 
+            background: #222; 
+            color: #00d26a; 
+            text-decoration: none; 
+            padding: 8px 15px; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            border: 1px solid #333;
+        }
 /* Fix for the Header Layout */
 .controls {
     display: flex;
@@ -188,6 +197,7 @@
         <span>Date: <input type="date" id="currentDate"></span>
         <button onclick="saveSnapshotSettings()">Save</button>
         <a href="/snapshots_page" class="view-history-btn">📸 View History</a>
+        <a href="/dashboard" class="back-btn">← Back to Dashboard</a>
     </div>
 </div>
 
