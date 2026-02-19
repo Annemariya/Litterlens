@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Staff Management - LitterLens</title>
-    <link rel="icon" type="image/png" href="/static/icons8.png">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-zinc-900 text-white min-h-screen p-8">  
@@ -12,41 +11,111 @@
             <h1 class="text-3xl font-bold">Manage Field Staff</h1>
             <a href="/dashboard" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg">← Back</a>
         </header>
+        
+        <div class="flex flex-col md:flex-row gap-4 mb-6 items-center">
+            <div class="flex gap-2">
+                <span class="text-sm self-center opacity-70">Zone:</span>
+                <button onclick="setZoneFilter('all')" class="bg-zinc-700 hover:bg-zinc-600 px-4 py-2 rounded-lg text-sm transition">All</button>
+                <button onclick="setZoneFilter('1')" class="bg-zinc-800 hover:bg-green-600 px-4 py-2 rounded-lg text-sm transition">1</button>
+                <button onclick="setZoneFilter('2')" class="bg-zinc-800 hover:bg-green-600 px-4 py-2 rounded-lg text-sm transition">2</button>
+                <button onclick="setZoneFilter('3')" class="bg-zinc-800 hover:bg-green-600 px-4 py-2 rounded-lg text-sm transition">3</button>
+            </div>
 
-        <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden">
-            <table class="w-full text-left border-collapse">
-                <thead class="bg-white/5 border-b border-white/10 text-gray-400 uppercase text-sm">
-                    <tr>
-                        <th class="p-4">Name</th>
-                        <th class="p-4">ID</th>
-                        <th class="p-4">Role</th>
-                        <th class="p-4">Zone</th>
-                        <th class="p-4">Status</th>
-                        <th class="p-4">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for member in staff_list %}
-                    <tr class="border-b border-white/5 hover:bg-white/5 transition">
-                        <td class="p-4 font-semibold">{{ member.full_name }}</td>
-                        <td class="p-4 opacity-70">{{ member.employee_id }}</td>
-                        <td class="p-4">
-                            <span class="px-2 py-1 rounded bg-blue-500/20 text-blue-300 text-xs">
-                                {{ member.job_role }}
-                            </span>
-                        </td>
-                        <td class="p-4">Zone {{ member.zone }}</td>
-                        <td class="p-4">
-                            <span class="text-green-400">● Active</span>
-                        </td>
-                        <td class="p-4">
-                            <button class="text-red-400 hover:underline">Remove</button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="relative w-full md:w-64">
+                <input type="text" id="nameSearch" onkeyup="filterTable()" 
+                placeholder="Search staff by name..." 
+                class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-green-500 transition">
+            </div>
+        </div>
+
+        <div class="flex gap-6">
+            <div class="w-64 flex flex-col gap-4">
+                <div class="bg-zinc-800 p-4 rounded-xl border border-zinc-700">
+                    <h3 class="text-zinc-400 text-xs uppercase mb-4 font-bold">Staff Controls</h3>
+            
+                    <a id="nav-analytics" href="#" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg transition mb-2 opacity-50 pointer-events-none">
+                        📊 View Analytics
+                    </a>
+            
+                    <button id="nav-edit" onclick="toggleEditMode()" class="flex items-center gap-2 bg-zinc-700 hover:bg-amber-600 text-white p-3 rounded-lg transition w-full opacity-50 pointer-events-none">
+                        ✏️ Edit Details
+                    </button>
+            
+                    <p class="text-[10px] text-zinc-500 mt-4">Select a staff member from the table to enable actions.</p>
+                </div>
+            </div>
+
+            <div class="flex-1 bg-zinc-900/50 rounded-xl border border-zinc-800 overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-zinc-800/50">
+                        <tr class="text-zinc-500 text-xs uppercase">
+                            <th class="p-4">Name</th>
+                            <th class="p-4">ID</th>
+                            <th class="p-4">Zone</th>
+                            <th class="p-4">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in staff_list %}
+                        <tr onclick="selectStaff('{{ member.id }}', '{{ member.full_name }}')" 
+                            class="border-b border-zinc-800 hover:bg-zinc-800 cursor-pointer transition staff-row">
+                            <td class="p-4 font-medium">{{ member.full_name }}</td>
+                            <td class="p-4 text-zinc-400">{{ member.employee_id }}</td>
+                            <td class="p-4">{{ member.zone }}</td>
+                            <td class="p-4 text-green-400 text-xs">● {{ member.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </body>
 </html>
+
+<script>
+let currentZone = 'all';
+
+function setZoneFilter(zone) {
+    currentZone = zone;
+    filterTable(); // Trigger the combined filter
+}
+
+function filterTable() {
+    const searchInput = document.getElementById('nameSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('tbody tr');
+
+    rows.forEach(row => {
+        const nameCell = row.querySelectorAll('td')[0].innerText.toLowerCase(); // Column 2: Name
+        const zoneCell = row.querySelectorAll('td')[3].innerText; // Column 4: Zone
+
+        const matchesName = nameCell.includes(searchInput);
+        const matchesZone = (currentZone === 'all' || zoneCell.includes(currentZone));
+
+        // Only show row if BOTH name and zone match
+        if (matchesName && matchesZone) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+}
+
+function selectStaff(id, name) {
+    // 1. Highlight the selected row
+    document.querySelectorAll('.staff-row').forEach(r => r.classList.remove('bg-zinc-700'));
+    event.currentTarget.classList.add('bg-zinc-700');
+
+    // 2. Enable Sidebar Buttons
+    const anaBtn = document.getElementById('nav-analytics');
+    const editBtn = document.getElementById('nav-edit');
+
+    anaBtn.href = `/staff_performance/${id}`; // Points to your analytics route
+    anaBtn.classList.remove('opacity-50', 'pointer-events-none');
+    
+    editBtn.classList.remove('opacity-50', 'pointer-events-none');
+    
+    // Update button text to show who is selected
+    anaBtn.innerHTML = `📊 Analytics: ${name.split(' ')[0]}`;
+}
+</script>

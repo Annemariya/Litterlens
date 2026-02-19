@@ -9,7 +9,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from ultralytics import YOLO
 from models import Base, User, Location, Camera
 from sqlalchemy.orm import Session
-from fastapi import FastAPI, Request, Depends, HTTPException,status,Form
+from fastapi import FastAPI, Request, Depends, HTTPException, status, Form
 from pydantic import BaseModel
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -27,7 +27,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 app.mount("/detected_snapshots", StaticFiles(directory="detected_snapshots"), name="snapshots")
 # Load your YOLO Model
-model = YOLO("best.pt") # Ensure your best.pt is in the folder
+#model = YOLO("best.pt") # Ensure your best.pt is in the folder
 
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -451,6 +451,29 @@ def get_staff_management(request: Request, db: Session = Depends(get_db)):
         "request": request, 
         "staff_list": staff_list
     })
+
+@app.post("/update_staff/{staff_id}")
+async def update_staff(
+    staff_id: int, 
+    full_name: str = Form(...), 
+    zone: str = Form(...), 
+    db: Session = Depends(get_db)
+):
+    user = db.query(User).filter(User.id == staff_id).first()
+    if user:
+        user.full_name = full_name
+        user.zone = zone
+        db.commit() # This saves the changes to the database
+    return RedirectResponse(url="/staff_mngmt", status_code=303)
+
+@app.post("/edit_staff/{staff_id}")
+async def edit_staff(staff_id: int, full_name: str = Form(...), zone: str = Form(...), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == staff_id).first()
+    if user:
+        user.full_name = full_name
+        user.zone = zone
+        db.commit() # Saves changes to PostgreSQL
+    return RedirectResponse(url="/staff_mngmt", status_code=303)
 
 # --- ADD THIS AT THE VERY END OF main.py ---
 
