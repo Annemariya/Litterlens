@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Staff - LitterLens</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-900 text-white min-h-screen flex items-center justify-center p-6">
+
+    <div class="max-w-6xl mx-auto px-4 py-8">
+      <div class="flex justify-between items-center mb-6">
+      	<h2 class="text-2xl font-bold text-zinc-100">Edit Staff Member</h2>
+            <a href="/staff_mngmt" class="text-zinc-500 hover:text-zinc-300 text-sm">Cancel</a>
+      </div>
+
+      <form action="/update_staff/{{ member.id }}" method="POST" class="bg-zinc-950/50 p-8 rounded-2xl border border-zinc-800 shadow-2xl">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-8">        
+        		<div class="col-span-4 border-b border-zinc-800 pb-2 mb-2">
+            		<h3 class="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em]">Personal Information</h3>
+        		</div>
+        
+        		<div class="md:col-span-2 flex flex-col gap-1.5">
+            		<label class="text-[11px] font-semibold text-zinc-400 ml-1">Full Name</label>
+            		<input type="text" name="full_name" value="{{ member.full_name }}" required
+                   		class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none transition w-full">
+        		</div>
+
+        		<div class="col-span-1 flex flex-col gap-1.5">
+            		<label class="text-[11px] font-semibold text-zinc-400 ml-1">Age</label>
+            		<input type="number" name="age" value="{{ member.age }}" required
+                  		class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none transition">
+        		</div>
+
+        		<div class="flex flex-col gap-1.5">
+            		<label class="text-[11px] font-semibold text-zinc-400 ml-1">Gender</label>
+            		<select name="sex" class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none transition">
+                			<option value="Male" {% if member.sex == 'Male' %}selected{% endif %}>Male</option>
+                			<option value="Female" {% if member.sex == 'Female' %}selected{% endif %}>Female</option>
+                			<option value="Other" {% if member.sex == 'Other' %}selected{% endif %}>Other</option>
+            		</select>
+        		</div>
+
+        		<div class="flex flex-col gap-1.5">
+            		<label class="text-[11px] font-semibold text-zinc-400 ml-1">Phone Number</label>
+            		<input type="text" name="phone_number" value="{{ member.phone_number }}" required
+                   		class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none transition">
+        		</div>
+
+        		<div class="col-span-2 flex flex-col gap-1.5">
+            		<label class="text-[11px] font-semibold text-zinc-400 ml-1">Email Address</label>
+            		<input type="email" name="email" value="{{ member.email or '' }}"
+                   		class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none transition">
+        		</div>
+
+        		<div class="col-span-4 border-b border-zinc-800 pb-2 mb-2">
+            		<h3 class="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em]">Employment & Access</h3>
+        		</div>
+
+        		<div class="flex flex-col gap-1.5">
+            		<label class="text-[11px] font-semibold text-zinc-400 ml-1">Employee ID</label>
+            		<input type="text" name="employee_id" value="{{ member.employee_id }}" required
+                   		class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none transition">
+        		</div>
+
+        		<div class="flex flex-col gap-1.5">
+            		<label class="text-[11px] font-semibold text-zinc-400 ml-1">Job Role</label>
+            		<input type="text" name="job_role" value="{{ member.job_role }}" required
+                   		class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none transition">
+        		</div>
+
+        		<div class="flex flex-col gap-1.5">
+            		<label class="text-[11px] font-semibold text-zinc-400 ml-1">Zone</label>
+            		<input type="number" name="zone" value="{{ member.zone }}" required
+                   		class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none transition">
+        		</div>
+
+        		<div class="flex flex-col gap-1.5">
+            		<label class="text-[11px] font-semibold text-zinc-400 ml-1">System Role</label>
+            		<select name="role" class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none transition">
+                			<option value="staff" {% if member.role == 'staff' %}selected{% endif %}>Staff</option>
+                			<option value="admin" {% if member.role == 'admin' %}selected{% endif %}>Admin</option>
+            		</select>
+        		</div>
+
+        		<div class="flex flex-col gap-1.5">
+            		<label class="text-[11px] font-semibold text-zinc-400 ml-1">Status</label>
+            		<select name="status" class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none transition">
+               			<option value="Active" {% if member.status == 'Active' %}selected{% endif %}>Active</option>
+                			<option value="Inactive" {% if member.status == 'Inactive' %}selected{% endif %}>Inactive</option>
+            		</select>
+        		</div>
+
+        		<div class="flex flex-col gap-1.5">
+            		<label class="text-[11px] font-semibold text-zinc-400 ml-1">Change Password</label>
+            		<input type="password" name="password" placeholder="Leave blank if no change"
+                   		class="bg-zinc-950 border border-zinc-800 rounded-xl p-2.5 text-sm text-white focus:ring-1 focus:ring-blue-500 outline-none transition">
+        		</div>
+    		</div>
+    		<div class="mt-10 flex items-center justify-end gap-4">
+        		<button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold uppercase tracking-widest px-10 py-3 rounded-xl shadow-lg shadow-blue-900/20 transition-all">
+            		Update Details
+        		</button>
+    		</div>
+        </form>
+    </div>
+</body>
+</html>

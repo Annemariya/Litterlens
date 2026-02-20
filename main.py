@@ -452,28 +452,92 @@ def get_staff_management(request: Request, db: Session = Depends(get_db)):
         "staff_list": staff_list
     })
 
+# ROUTE 1: Display the Edit Page
+@app.get("/edit_staff/{staff_id}", response_class=HTMLResponse)
+async def get_edit_page(request: Request, staff_id: int, db: Session = Depends(get_db)):
+    # Find the staff member in the database by their unique ID
+    member = db.query(User).filter(User.id == staff_id).first()
+    
+    if not member:
+        raise HTTPException(status_code=404, detail="Staff member not found")
+        
+    return templates.TemplateResponse("edit_staff.html", {
+        "request": request,
+        "member": member
+    })
+
 @app.post("/update_staff/{staff_id}")
 async def update_staff(
-    staff_id: int, 
-    full_name: str = Form(...), 
-    zone: str = Form(...), 
+    staff_id: int,
+    full_name: str = Form(...),
+    employee_id: str = Form(...),
+    password: str = Form(None), # Password optional in edit
+    age: int = Form(...),
+    sex: str = Form(...),
+    phone_number: str = Form(...),
+    email: str = Form(None),
+    job_role: str = Form(...),
+    zone: int = Form(...),
+    role: str = Form(...),
+    status: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    user = db.query(User).filter(User.id == staff_id).first()
-    if user:
-        user.full_name = full_name
-        user.zone = zone
-        db.commit() # This saves the changes to the database
+    member = db.query(User).filter(User.id == staff_id).first()
+    if not member:
+        raise HTTPException(status_code=404, detail="Staff not found")
+
+    # Update all fields
+    member.full_name = full_name
+    member.employee_id = employee_id
+    member.age = age
+    member.sex = sex
+    member.phone_number = phone_number
+    member.email = email
+    member.job_role = job_role
+    member.zone = zone
+    member.role = role
+    member.status = status
+    
+    # Only update password if a new one is provided
+    if password:
+        member.password = password
+
+    db.commit()
     return RedirectResponse(url="/staff_mngmt", status_code=303)
 
-@app.post("/edit_staff/{staff_id}")
-async def edit_staff(staff_id: int, full_name: str = Form(...), zone: str = Form(...), db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.id == staff_id).first()
-    if user:
-        user.full_name = full_name
-        user.zone = zone
-        db.commit() # Saves changes to PostgreSQL
+@app.post("/delete_staff/{staff_id}")
+async def delete_staff_from_db(staff_id: int, db: Session = Depends(get_db)):
+    # Find the user in the database
+    member = db.query(User).filter(User.id == staff_id).first()
+    
+    if member:
+        db.delete(member)
+        db.commit() # Saves the deletion to PostgreSQL
+        
+    # Redirect back to the staff list
     return RedirectResponse(url="/staff_mngmt", status_code=303)
+
+@app.get("/analytics/{staff_id}", response_class=HTMLResponse)
+async def get_staff_analytics(request: Request, staff_id: int, db: Session = Depends(get_db)):
+    # 1. Fetch the staff member
+    member = db.query(User).filter(User.id == staff_id).first()
+    
+    if not member:
+        raise HTTPException(status_code=404, detail="Staff not found")
+
+    # 2. Placeholder for analytics data (Integrate your actual logs here later)
+    stats = {
+        "completion_rate": 85,
+        "avg_response_time": "12m",
+        "tasks_completed": 42,
+        "false_positives": 3
+    }
+
+    return templates.TemplateResponse("analytics.html", {
+        "request": request,
+        "member": member,
+        "stats": stats
+    })
 
 # --- ADD THIS AT THE VERY END OF main.py ---
 

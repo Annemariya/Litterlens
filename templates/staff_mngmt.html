@@ -12,36 +12,93 @@
             <a href="/dashboard" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg">← Back</a>
         </header>
         
-        <div class="flex flex-col md:flex-row gap-4 mb-6 items-center">
-            <div class="flex gap-2">
-                <span class="text-sm self-center opacity-70">Zone:</span>
-                <button onclick="setZoneFilter('all')" class="bg-zinc-700 hover:bg-zinc-600 px-4 py-2 rounded-lg text-sm transition">All</button>
-                <button onclick="setZoneFilter('1')" class="bg-zinc-800 hover:bg-green-600 px-4 py-2 rounded-lg text-sm transition">1</button>
-                <button onclick="setZoneFilter('2')" class="bg-zinc-800 hover:bg-green-600 px-4 py-2 rounded-lg text-sm transition">2</button>
-                <button onclick="setZoneFilter('3')" class="bg-zinc-800 hover:bg-green-600 px-4 py-2 rounded-lg text-sm transition">3</button>
+        <div class="flex flex-col gap-5 mb-8 w-full bg-zinc-900/30 p-5 rounded-2xl border border-zinc-800/50">
+            <div class="flex flex-row items-center gap-6 w-full">
+                <div class="relative w-full max-w-xs">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-zinc-500">🔍</span>
+                    <input type="text" id="staffSearch" onkeyup="filterTable()" placeholder="Search by name or ID..." 
+                        class="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2 pl-10 pr-4 text-sm text-zinc-200 outline-none focus:ring-1 focus:ring-blue-500 transition">
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <label class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Zone</label>
+                    <select id="zoneFilter" onchange="filterTable()" class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-300">
+                        <option value="All">All</option>
+                        <option value="1">Zone 1</option>
+                        <option value="2">Zone 2</option>
+                        <option value="3">Zone 3</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <label class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Status</label>
+                    <select id="statusFilter" onchange="filterTable()" class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-300">
+                        <option value="All">All</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="ml-auto flex items-center gap-4 min-w-[220px] justify-end">
+                    <div id="resultsBadge" class="hidden opacity-0 flex px-3 py-1 bg-blue-600/20 border border-blue-500/30 text-blue-400 text-xs font-bold rounded-full whitespace-nowrap transition-all duration-300 transform translate-x-2">
+                        <span id="badgeTextContent">
+                            <span id="matchCount">0</span>
+                        </span>
+                    </div>
+
+                    <button id="clearBtn" onclick="clearFilters()" 
+                            class="hidden opacity-0 inline-block w-28 h-9 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white text-[10px] uppercase tracking-widest font-bold rounded-lg border border-zinc-700 transition-all duration-300 transform translate-x-2">
+                        Clear All
+                    </button>
+                </div>
             </div>
 
-            <div class="relative w-full md:w-64">
-                <input type="text" id="nameSearch" onkeyup="filterTable()" 
-                placeholder="Search staff by name..." 
-                class="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-green-500 transition">
+            <div class="flex flex-row items-center pt-4 border-t border-zinc-800/40">
+                <div class="flex items-center gap-3 whitespace-nowrap">
+                    <label class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Sort By:</label>
+                    <select id="sortFilter" onchange="sortAndFilter()"
+                            class="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-300 focus:outline-none focus:border-zinc-600 cursor-pointer hover:bg-zinc-900 transition">
+                        <option value="id" selected>ID (Default)</option>
+                        <option value="name">Name</option>
+                        <option value="zone">Zone</option>
+                        <option value="status">Status</option>
+                        </select>                    
+                </div>    
             </div>
         </div>
 
         <div class="flex gap-6">
             <div class="w-64 flex flex-col gap-4">
-                <div class="bg-zinc-800 p-4 rounded-xl border border-zinc-700">
-                    <h3 class="text-zinc-400 text-xs uppercase mb-4 font-bold">Staff Controls</h3>
-            
-                    <a id="nav-analytics" href="#" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg transition mb-2 opacity-50 pointer-events-none">
-                        📊 View Analytics
-                    </a>
-            
-                    <button id="nav-edit" onclick="toggleEditMode()" class="flex items-center gap-2 bg-zinc-700 hover:bg-amber-600 text-white p-3 rounded-lg transition w-full opacity-50 pointer-events-none">
-                        ✏️ Edit Details
-                    </button>
-            
-                    <p class="text-[10px] text-zinc-500 mt-4">Select a staff member from the table to enable actions.</p>
+                <div class="bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800 shadow-xl">
+                    <h3 class="text-zinc-500 text-xs uppercase mb-6 font-bold tracking-wider">Staff Controls</h3>
+    
+                    <div class="flex flex-col gap-4">
+        
+                        <a id="nav-analytics" href="javascript:void(0)" 
+                            class="flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-xl transition-all duration-200 shadow-lg shadow-blue-900/20 opacity-50 pointer-events-none">
+                            <span class="text-lg">📊</span>
+                            <span class="font-semibold">View Analytics</span>
+                        </a>
+        
+                        <button id="nav-edit" 
+                                class="flex items-center justify-center gap-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-2.5 px-4 rounded-xl transition-all duration-200 border border-zinc-700 opacity-50 pointer-events-none">
+                            <span class="text-lg">✏️</span>
+                            <span class="font-semibold">Edit Details</span>
+                        </button>
+
+                        <form id="delete-form" method="POST" action="" class="w-full">
+                            <button id="nav-remove" type="submit" 
+                                    onclick="return confirm('Permanently remove this staff member?');"
+                                    class="w-full flex items-center justify-center gap-3 bg-red-900/20 hover:bg-red-600 border border-red-900/30 text-red-500 hover:text-white py-2.5 px-4 rounded-xl transition-all duration-200 opacity-50 pointer-events-none">
+                                <span class="text-lg">🗑️</span>
+                                <span class="font-semibold">Remove Staff</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <p class="mt-6 text-zinc-500 text-[11px] leading-relaxed text-center italic">
+                        Select a staff member to enable actions.
+                    </p>
                 </div>
             </div>
 
@@ -56,13 +113,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for member in staff_list %}
-                        <tr onclick="selectStaff('{{ member.id }}', '{{ member.full_name }}')" 
-                            class="border-b border-zinc-800 hover:bg-zinc-800 cursor-pointer transition staff-row">
-                            <td class="p-4 font-medium">{{ member.full_name }}</td>
-                            <td class="p-4 text-zinc-400">{{ member.employee_id }}</td>
-                            <td class="p-4">{{ member.zone }}</td>
-                            <td class="p-4 text-green-400 text-xs">● {{ member.status }}</td>
+                        {% for staff in staff_list %}
+                        <tr class="staff-row border-b border-zinc-800 hover:bg-zinc-800/50 cursor-pointer transition-colors"
+                            data-zone="{{ staff.zone }}"
+                            data-status="{{ staff.status }}"
+                            onclick="selectStaff('{{ staff.id }}', '{{ staff.full_name }}')">
+    
+                            <td class="p-4 text-zinc-300">{{ staff.employee_id }}</td>
+                            <td class="p-4 text-white font-medium">{{ staff.full_name }}</td>
+                            <td class="p-4 text-zinc-400">Zone {{ staff.zone }}</td>
+                            <td class="p-4">
+                                <span class="px-2 py-1 rounded-md text-xs {% if staff.status == 'Active' %}bg-green-900/30 text-green-500{% else %}bg-zinc-800 text-zinc-500{% endif %}">
+                                    {{ staff.status }}
+                                </span>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -82,40 +146,181 @@ function setZoneFilter(zone) {
 }
 
 function filterTable() {
-    const searchInput = document.getElementById('nameSearch').value.toLowerCase();
-    const rows = document.querySelectorAll('tbody tr');
+    const searchText = document.getElementById('staffSearch').value.toLowerCase();
+    const zoneValue = document.getElementById('zoneFilter').value;
+    const statusValue = document.getElementById('statusFilter').value;
+    const sortValue = document.getElementById('sortFilter').value;
+    
+    const rows = document.querySelectorAll('.staff-row');
+    const badge = document.getElementById('resultsBadge');
+    const clearBtn = document.getElementById('clearBtn');
+    const badgeText = document.getElementById('badgeTextContent');
+    
+    let visibleCount = 0;
 
     rows.forEach(row => {
-        const nameCell = row.querySelectorAll('td')[0].innerText.toLowerCase(); // Column 2: Name
-        const zoneCell = row.querySelectorAll('td')[3].innerText; // Column 4: Zone
+        const text = row.textContent.toLowerCase();
+        const zone = row.getAttribute('data-zone');
+        const status = row.getAttribute('data-status');
 
-        const matchesName = nameCell.includes(searchInput);
-        const matchesZone = (currentZone === 'all' || zoneCell.includes(currentZone));
+        const matchesSearch = text.includes(searchText);
+        const matchesZone = (zoneValue === "All" || zone === zoneValue);
+        const matchesStatus = (statusValue === "All" || status === statusValue);
 
-        // Only show row if BOTH name and zone match
-        if (matchesName && matchesZone) {
+        if (matchesSearch && matchesZone && matchesStatus) {
             row.style.display = "";
+            visibleCount++;
         } else {
             row.style.display = "none";
         }
     });
+
+    const isFiltered = (searchText !== "" || zoneValue !== "All" || statusValue !== "All");
+
+    if (isFiltered) {
+        // --- NEW LOGIC: Text Swap based on count ---
+        if (visibleCount > 1) {
+            badgeText.innerHTML = `<span id="matchCount">${visibleCount}</span>&nbsp;Matches Found`;
+            badge.classList.replace('bg-red-900/20', 'bg-blue-600/20');
+            badge.classList.replace('text-red-400', 'text-blue-400');
+        }else if (visibleCount == 1) {
+            badgeText.innerHTML = `<span id="matchCount">${visibleCount}</span>&nbsp;Match Found`;
+            badge.classList.replace('bg-red-900/20', 'bg-blue-600/20');
+            badge.classList.replace('text-red-400', 'text-blue-400');
+        } else {
+            badgeText.innerHTML = `No Results Found`;
+            badge.classList.replace('bg-blue-600/20', 'bg-red-900/20');
+            badge.classList.replace('text-blue-400', 'text-red-400');
+        }
+
+        badge.classList.remove('hidden');
+        clearBtn.classList.remove('hidden');
+
+        
+
+        setTimeout(() => {
+            [badge, clearBtn].forEach(el => {
+                el.classList.add('opacity-100', 'translate-x-0');
+                el.classList.remove('opacity-0', 'translate-x-2');
+            });
+        }, 10);
+    } else if (sortValue !== "id") {
+        clearBtn.classList.remove('hidden');
+        setTimeout(() => {
+            clearBtn.classList.add('opacity-100', 'translate-x-0');
+            clearBtn.classList.remove('opacity-0', 'translate-x-2');
+        }, 10);
+    } else {
+        [badge, clearBtn].forEach(el => {
+            el.classList.add('opacity-0', 'translate-x-2');
+            el.classList.remove('opacity-100', 'translate-x-0');
+        });
+
+        setTimeout(() => {
+            if (!isFiltered) {
+                badge.classList.add('hidden');
+                clearBtn.classList.add('hidden');
+            }
+        }, 300);
+    }
+}
+
+function sortAndFilter() {
+    const tableBody = document.querySelector('tbody');
+    const rows = Array.from(document.querySelectorAll('.staff-row'));
+    const sortValue = document.getElementById('sortFilter').value;
+
+    // 1. Sort the Array of Rows
+    rows.sort((a, b) => {
+        let valA, valB;
+        
+        switch(sortValue) {
+            case 'id':
+                valA = a.cells[0].textContent.trim().toLowerCase();
+                valB = b.cells[0].textContent.trim().toLowerCase();
+                break;
+            case 'name':
+                valA = a.cells[1].textContent.trim().toLowerCase();
+                valB = b.cells[1].textContent.trim().toLowerCase();
+                break;
+            case 'zone':
+                // Assumes Zone is in the 3rd column (index 2)
+                valA = a.cells[2].textContent.trim().toLowerCase();
+                valB = b.cells[2].textContent.trim().toLowerCase();
+                break;
+            case 'status':
+                // Assumes Status is in the 4th column (index 3)
+                valA = a.cells[3].textContent.trim().toLowerCase();
+                valB = b.cells[3].textContent.trim().toLowerCase();
+                break;
+        }
+        
+        return valA.localeCompare(valB);
+    });
+
+    // 2. Re-append sorted rows to the table
+    rows.forEach(row => tableBody.appendChild(row));
+
+    // 3. Trigger existing filter logic to maintain visibility settings
+    filterTable(); 
+}
+
+// Update your clearFilters to reset the sort as well
+function clearFilters() {
+    document.getElementById('staffSearch').value = "";
+    document.getElementById('zoneFilter').value = "All";
+    document.getElementById('statusFilter').value = "All";
+    document.getElementById('sortFilter').value = "id";
+    isAscending = true;
+    sortAndFilter();
 }
 
 function selectStaff(id, name) {
-    // 1. Highlight the selected row
-    document.querySelectorAll('.staff-row').forEach(r => r.classList.remove('bg-zinc-700'));
-    event.currentTarget.classList.add('bg-zinc-700');
+    const row = event.currentTarget;
+    const isAlreadySelected = row.classList.contains('bg-zinc-800');
 
-    // 2. Enable Sidebar Buttons
+    // 1. Identify all control elements
     const anaBtn = document.getElementById('nav-analytics');
     const editBtn = document.getElementById('nav-edit');
+    const removeBtn = document.getElementById('nav-remove');
+    const deleteForm = document.getElementById('delete-form');
 
-    anaBtn.href = `/staff_performance/${id}`; // Points to your analytics route
-    anaBtn.classList.remove('opacity-50', 'pointer-events-none');
-    
-    editBtn.classList.remove('opacity-50', 'pointer-events-none');
-    
-    // Update button text to show who is selected
-    anaBtn.innerHTML = `📊 Analytics: ${name.split(' ')[0]}`;
+    // 2. Clear previous selection highlights
+    document.querySelectorAll('.staff-row').forEach(r => r.classList.remove('bg-zinc-800'));
+
+    if (isAlreadySelected) {
+        // --- DESELECT LOGIC ---
+        // Disable buttons and reset text
+        anaBtn.classList.add('opacity-50', 'pointer-events-none');
+        anaBtn.innerHTML = `📊 View Analytics`;
+        
+        editBtn.classList.add('opacity-50', 'pointer-events-none');
+        
+        removeBtn.classList.add('opacity-50', 'pointer-events-none');
+        deleteForm.action = "";
+    } else {
+        // --- SELECT LOGIC ---
+        // Highlight the new row
+        row.classList.add('bg-zinc-800');
+
+        // Enable Analytics button
+        anaBtn.classList.remove('opacity-50', 'pointer-events-none');
+        anaBtn.innerHTML = `📊 Analytics: ${name.split(' ')[0]}`;
+        anaBtn.href = `/analytics/${id}`; 
+        anaBtn.classList.remove('opacity-50', 'pointer-events-none');
+
+        // Enable Edit button
+        editBtn.onclick = () => window.location.href = `/edit_staff/${id}`;
+        editBtn.classList.remove('opacity-50', 'pointer-events-none');
+
+        // Enable Remove button and set form action
+        deleteForm.action = `/delete_staff/${id}`;
+        removeBtn.classList.remove('opacity-50', 'pointer-events-none');
+    }
 }
+// Add this at the end of your script tag
+document.addEventListener('DOMContentLoaded', () => {
+    // This ensures the table is sorted by ID (the HTML default) on load
+    sortAndFilter();
+});
 </script>
